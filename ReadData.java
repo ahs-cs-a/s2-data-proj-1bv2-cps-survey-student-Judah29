@@ -5,7 +5,7 @@ import java.io.File;
 public class ReadData{
     //I hard-coded the number of rows and columns so 
     //I could use a 2D array
-    private double[][] data = new double[...][...];
+    private double[][] data = new double[21908][14];
 
     //This should read in the csv file and store the data in a 2D array,
     //data -- don't forget to skip the header line and parse everything
@@ -18,8 +18,10 @@ public class ReadData{
             while(scanner.hasNextLine()){
                 String line = scanner.nextLine();
                 String[] lineArr = line.split(",");
-                ...
+                for(int col = 0; col < data[0].length; col++){
+                    
                 row++;
+                }
             }
             scanner.close();
     
@@ -35,9 +37,13 @@ public class ReadData{
     //this should return a double array of the column
     //of data
     public double[][] getColumns(int col1, int col2){
-        double[][] columns = ...
-        ...
-        return columns;
+        double[][] column = new double[data.length][2]; 
+        for(int i = 0; i < column.length; i++){
+            column[i][0] = data[i][col1];
+            column[i][1] = data[i][col2]; 
+             
+             } 
+        return column;
     }
 
     //this returns the standard deviation of the x and y column
@@ -51,29 +57,63 @@ public class ReadData{
     //return an array with two values -- standard deviation 
     //for the x column and y column
     public double[] stdDeviation(double[][] xy){
-        double sum = 0;
-        double[] mean = ...
-        ...
-        return .. //sample variance!
+        double s = xy.length;
+        double[] mean = new double[2]
+
+        for (int i = 0; i < s; i++) {
+            mean[0] += xy[i][0];
+            mean[1] += xy[i][1];
+        }
+        mean[0] /= s;
+        mean[1] /= s;
+
+        double sumSqDiffX = 0;
+        double sumSqDiffY = 0;
+        for (int i = 0; i < n; i++) {
+            sumSqDiffX += Math.pow(xy[i][0] - mean[0], 2);
+            sumSqDiffY += Math.pow(xy[i][1] - mean[1], 2);
+        }
+        
+        double stdDevX = Math.sqrt(sumSqDiffX / (n - 1));
+        double stdDevY = Math.sqrt(sumSqDiffY / (n - 1));
+
+        return new double[]{stdDevX, stdDevY};
     }
     
     //this returns the mean of each columns of data passed in
     //the mean is the sum of the values divided by the number 
     //of values
     public double[] mean(double[][] xy){
-        double sum = 0;
-        ...
-        return ...;
+        int s = xy.length;
+        double[] mean = new double[2];
+
+        for (int i = 0; i < s; i++) {
+        mean[0] += xy[i][0];
+        mean[1] += xy[i][1];
+        }
+
+        mean[0] /= s;
+        mean[1] /= s;
+
+        return mean;
     }
+    
 
     //this returns the values of each column in standard units
     //the standard units are the value minus the mean divided by the standard deviation
     //this should return a double 2D array of the standard units
     public double[][] standardUnits(double[][] xy){
-        double[][] stdArr = ...
-        double[] stdDeviation = ...;
-        double[] mean = ...;
-        ...
+        double s = xy.length;
+        double[][] stdArr = new double[s][2];
+    
+        double[] stdDeviation = stdDeviation(xy);
+        double[] mean = mean(xy);
+
+        for (int i = 0; i < s; i++) {
+            stdArr[i][0] = (xy[i][0] - mean[0]) / stdDeviation[0];
+            stdArr[i][1] = (xy[i][1] - mean[1]) / stdDeviation[1];
+        }
+
         return stdArr;
     }
     
@@ -85,9 +125,15 @@ public class ReadData{
     //between the two columns of data
     //the correlation is between -1 and 1
     public double correlation(double[][] xy){
+        double[][] std = standardUnits(xy);
+        int s = std.length;
         double sum = 0;
-        ...
-        return ...;    
+
+        for (int i = 0; i < s; i++) {
+            sum += std[i][0] * std[i][1];
+        }
+
+        return sum / (s - 1);     
     }
     
     public void runRegression(){
